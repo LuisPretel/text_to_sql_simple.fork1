@@ -7,7 +7,6 @@ engine = create_engine("sqlite:///personas.db", echo=True)
 Session = sessionmaker(bind=engine)
 session = Session()
 
-
 # Modelo
 class Persona(Base):
     __tablename__ = "personas"
@@ -15,7 +14,8 @@ class Persona(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String)
     edad = Column(Integer)
-
+    telefono = Column(String)
+    correo = Column(String)
 
 # Crear tabla
 Base.metadata.create_all(engine)
@@ -27,19 +27,31 @@ def interpretar_texto(texto):
     if palabras[0] == "agrega" and palabras[1] == "persona":
         nombre = palabras[2]
         edad = int(palabras[3])
+        telefono = palabras[4]
+        correo = palabras[5]
 
-        nueva = Persona(nombre=nombre, edad=edad)
+        nueva = Persona(
+            nombre=nombre,
+            edad=edad,
+            telefono=telefono,
+            correo=correo
+        )
+
         session.add(nueva)
         session.commit()
 
-        return f"Persona '{nombre}' agregada con edad {edad}"
+        return f"Persona '{nombre}' agregada correctamente."
 
-    elif texto == "muestra todas las personas":
+    elif texto.lower() == "muestra todas las personas":
         personas = session.query(Persona).all()
 
         if personas:
             return "\n".join(
-                [f"{p.id}. {p.nombre} - {p.edad} años" for p in personas]
+                [
+                    f"{p.id}. {p.nombre} - {p.edad} años - "
+                    f"Tel: {p.telefono} - Correo: {p.correo}"
+                    for p in personas
+                ]
             )
 
         return "No hay personas registradas."
@@ -57,4 +69,3 @@ if __name__ == "__main__":
             break
 
         print(interpretar_texto(comando))
-        print("ruisui")
