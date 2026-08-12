@@ -57,3 +57,4 @@ if __name__ == "__main__":
             break
 
         print(interpretar_texto(comando))
+        print("ruisui")
